@@ -237,7 +237,7 @@ if __name__ == '__main__':
   # initilize the network here.
   if args.net == 'vgg16':
     fasterRCNN = vgg16(imdb.classes, pretrained=True, class_agnostic=args.class_agnostic)
-  elif args.net in ['vgg16_dc', 'vgg16_dc_bias']:
+  elif args.net in ['vgg16_dc', 'vgg16_dc_bias', 'vgg16_dc_swd']:
     fasterRCNN = vgg16_dc(imdb.classes, pretrained=True, class_agnostic=args.class_agnostic)
   elif args.net == 'vgg16_dc_fx1':
     fasterRCNN = vgg16_dc(
