@@ -14,11 +14,14 @@ from model.faster_rcnn.vgg16_dc_orig import load_model
 
 
 class vgg16_dc(_fasterRCNN):
-  def __init__(self, classes, pretrained=False, class_agnostic=False):
+  def __init__(
+      self, classes, pretrained=False, class_agnostic=False,
+      fix_layers=15):
     self.model_path = 'data/pretrained_model/vgg16_dc.pth'
     self.dout_base_model = 512
     self.pretrained = pretrained
     self.class_agnostic = class_agnostic
+    self.fix_layers = fix_layers
 
     _fasterRCNN.__init__(self, classes, class_agnostic)
 
@@ -47,7 +50,7 @@ class vgg16_dc(_fasterRCNN):
     self.RCNN_base = nn.Sequential(*RCNN_base_layers)
 
     # Fix the layers before conv3:
-    for layer in range(15):
+    for layer in range(self.fix_layers):
       for p in self.RCNN_base[layer].parameters(): p.requires_grad = False
 
     self.RCNN_top = vgg.classifier
@@ -73,7 +76,7 @@ class vgg16_dc(_fasterRCNN):
     nn.Module.train(self, mode)
     if mode:
       # Set fixed blocks to be in eval mode
-      for layer in range(15):
+      for layer in range(self.fix_layers):
         self.RCNN_base[layer].eval()
 
       def set_bn_eval(m):
