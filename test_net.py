@@ -30,7 +30,9 @@ from model.rpn.bbox_transform import bbox_transform_inv
 from model.utils.net_utils import save_net, load_net, vis_detections
 from model.faster_rcnn.vgg16 import vgg16
 from model.faster_rcnn.vgg16_dc import vgg16_dc
+from model.faster_rcnn.alexnet_dc import alexnet_dc
 from model.faster_rcnn.resnet import resnet
+from trainval_net import get_network
 
 import pdb
 
@@ -148,24 +150,7 @@ if __name__ == '__main__':
   load_name = os.path.join(input_dir,
     'faster_rcnn_{}_{}_{}.pth'.format(args.checksession, args.checkepoch, args.checkpoint))
 
-  # initilize the network here.
-  if args.net == 'vgg16':
-    fasterRCNN = vgg16(imdb.classes, pretrained=False, class_agnostic=args.class_agnostic)
-  elif args.net in ['vgg16_dc', 'vgg16_dc_bias', 'vgg16_dc_swd']:
-    fasterRCNN = vgg16_dc(imdb.classes, pretrained=True, class_agnostic=args.class_agnostic)
-  elif args.net == 'vgg16_dc_fx1':
-    fasterRCNN = vgg16_dc(
-            imdb.classes, pretrained=True, class_agnostic=args.class_agnostic, fix_layers=9)
-  elif args.net == 'res101':
-    fasterRCNN = resnet(imdb.classes, 101, pretrained=False, class_agnostic=args.class_agnostic)
-  elif args.net == 'res50':
-    fasterRCNN = resnet(imdb.classes, 50, pretrained=False, class_agnostic=args.class_agnostic)
-  elif args.net == 'res152':
-    fasterRCNN = resnet(imdb.classes, 152, pretrained=False, class_agnostic=args.class_agnostic)
-  else:
-    print("network is not defined")
-    pdb.set_trace()
-
+  fasterRCNN = get_network(args)
   fasterRCNN.create_architecture()
 
   print("load checkpoint %s" % (load_name))

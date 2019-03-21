@@ -8,6 +8,7 @@ import torch
 import torch.nn as nn
 import math
 from random import random as rd
+from model.faster_rcnn.alexnet_dc_orig import alexnet
 import os
 
 __all__ = [ 'VGG', 'vgg16']
@@ -108,6 +109,8 @@ def load_model(path):
         sob = 'sobel.0.weight' in checkpoint['state_dict'].keys()
         if checkpoint['arch'] == 'vgg16':
             model = vgg16(sobel=sob, out=int(N[0]))
+        elif checkpoint['arch'] == 'alexnet':
+            model = alexnet(sobel=sob, out=int(N[0]))
         else:
             raise NotImplementedError
 

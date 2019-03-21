@@ -28,12 +28,12 @@ def build_normalize():
 	return normalize
 
 
-class vgg16_dc(_fasterRCNN):
+class alexnet_dc(_fasterRCNN):
   def __init__(
       self, classes, pretrained=False, class_agnostic=False,
       fix_layers=15):
-    self.model_path = 'data/pretrained_model/vgg16_dc.pth'
-    self.dout_base_model = 512
+    self.model_path = 'data/pretrained_model/alexnet_dc.pth'
+    self.dout_base_model = 256
     self.pretrained = pretrained
     self.class_agnostic = class_agnostic
     self.fix_layers = fix_layers
@@ -41,22 +41,18 @@ class vgg16_dc(_fasterRCNN):
     _fasterRCNN.__init__(self, classes, class_agnostic)
 
   def _init_modules(self):
-    vgg = load_model(self.model_path)
+    alexnet = load_model(self.model_path)
 
-    vgg.classifier = nn.Sequential(*list(vgg.classifier._modules.values()))
+    alexnet.classifier = nn.Sequential(*list(alexnet.classifier._modules.values()))
 
     # not using the last maxpool layer
     RCNN_base_layers = [build_normalize()]
-    RCNN_base_layers.extend(list(vgg.sobel._modules.values()))
-    RCNN_base_main = list(vgg.features._modules.values())[:-1]
+    RCNN_base_layers.extend(list(alexnet.sobel._modules.values()))
+    RCNN_base_main = list(alexnet.features._modules.values())[:-1]
     RCNN_base_layers.extend(RCNN_base_main)
     self.RCNN_base = nn.Sequential(*RCNN_base_layers)
 
-    # Fix the layers before conv3:
-    for layer in range(self.fix_layers):
-      for p in self.RCNN_base[layer].parameters(): p.requires_grad = False
-
-    self.RCNN_top = vgg.classifier
+    self.RCNN_top = alexnet.classifier
 
     # not using the last maxpool layer
     self.RCNN_cls_score = nn.Linear(4096, self.n_classes)
@@ -78,10 +74,6 @@ class vgg16_dc(_fasterRCNN):
     # Override train so that the training mode is set as we want
     nn.Module.train(self, mode)
     if mode:
-      # Set fixed blocks to be in eval mode
-      for layer in range(self.fix_layers):
-        self.RCNN_base[layer].eval()
-
       def set_bn_eval(m):
         classname = m.__class__.__name__
         if classname.find('BatchNorm') != -1:
