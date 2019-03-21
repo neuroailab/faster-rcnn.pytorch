@@ -10,3 +10,4 @@ CUDA_VISIBLE_DEVICES=$GPU_ID python trainval_net.py \
                    --bs $BATCH_SIZE --nw $WORKER_NUMBER \
                    --lr $LEARNING_RATE --lr_decay_step $DECAY_STEP \
                    --cuda --epochs $EPOCHS
+sh test_gnrl.sh $1 $2
