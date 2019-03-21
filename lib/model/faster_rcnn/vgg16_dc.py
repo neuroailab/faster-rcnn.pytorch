@@ -68,8 +68,8 @@ class vgg16_dc(_fasterRCNN):
       if classname.find('BatchNorm') != -1:
         for p in m.parameters(): p.requires_grad=False
 
-    self.RCNN_base.apply(set_bn_fix)
-    self.RCNN_top.apply(set_bn_fix)
+    #self.RCNN_base.apply(set_bn_fix)
+    #self.RCNN_top.apply(set_bn_fix)
 
   def train(self, mode=True):
     # Override train so that the training mode is set as we want
