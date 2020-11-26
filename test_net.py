@@ -150,7 +150,7 @@ if __name__ == '__main__':
   load_name = os.path.join(input_dir,
     'faster_rcnn_{}_{}_{}.pth'.format(args.checksession, args.checkepoch, args.checkpoint))
 
-  fasterRCNN = get_network(args)
+  fasterRCNN = get_network(args, imdb)
   fasterRCNN.create_architecture()
 
   print("load checkpoint %s" % (load_name))
